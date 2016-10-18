@@ -98,7 +98,7 @@ class PlotFigure(wx.Frame):
         self.x5 = self.x5[1:] + [self.x8]
 
         x3 = sorted(self.user[POINTS-25:])
-        self.x4 = x3[20]#int((x3[3] + x3[4] + x3[5] + x3[6])/4)
+        self.x4 = x3[21]#int((x3[3] + x3[4] + x3[5] + x3[6])/4)
         self.mean = self.mean[1:] + [self.x4]
         # else:
         # self.x5 = self.x5[1:] + [self.x8]
@@ -107,8 +107,8 @@ class PlotFigure(wx.Frame):
 
         # update the plot
         self.l_user.set_ydata(self.user)
-        self.l_native.set_ydata(signal.medfilt(self.mean, 11))
-        self.l_junzhi.set_ydata(signal.medfilt(self.x5,11))
+        self.l_native.set_ydata(signal.medfilt(self.mean, 5))
+        self.l_junzhi.set_ydata(signal.medfilt(self.x5,5))
 
 
         # just draw the "animated" objects
