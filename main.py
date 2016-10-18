@@ -16,7 +16,7 @@ from wx import wx
 # wxWidgets object ID for the timer
 TIMER_ID = wx.NewId()
 # number of data points
-POINTS = 450
+POINTS = 400
 
 class PlotFigure(wx.Frame):
     global chars, index, rssi, flag
@@ -30,13 +30,13 @@ class PlotFigure(wx.Frame):
         # add a subplot
         self.ax = self.fig.add_subplot(111)
         # limit the X and Y axes dimensions
-        self.ax.set_ylim([-100, -40])
+        self.ax.set_ylim([-100, -36])
         self.ax.set_xlim([0, POINTS+5])
 
         self.ax.set_autoscale_on(False)
-        self.ax.set_xticks(range(0, POINTS+5,30))
+        self.ax.set_xticks(range(0, POINTS+5,25))
         # we want a tick every 10 point on Y (101 is to have 10
-        self.ax.set_yticks(range(-100, -40, 2))
+        self.ax.set_yticks(range(-100, -36, 2))
         # disable autoscale, since we don't want the Axes to ad
         # draw a grid (it will be only for Y)
         self.ax.grid(True)
@@ -74,8 +74,13 @@ class PlotFigure(wx.Frame):
         #temp =np.random.randint(10,80)
         newdata = ser.readline()
         newdatavalue = newdata[:-1]
+        if(newdatavalue[1] == '-'):
+            newdatavalue = newdatavalue[1:]
+        print newdatavalue
+        if (newdatavalue[1] == '1'):
+            newdatavalue = self.x8
         newrssi = int(newdatavalue)
-        print newrssi
+        # print newrssi
         if newrssi<-20:
             temp = newrssi
         else:
@@ -85,14 +90,15 @@ class PlotFigure(wx.Frame):
         # if(self.paintflag == 0):
         #     self.paintflag = 15
             # x6 = signal.medfilt(self.user, 11)
-        x7 = sorted(self.user[POINTS-30:])
+        x7 = sorted(self.user[POINTS-25:])
         self.x8 =0
-        for xx in range(5,25,1):
-            self.x8 = int((self.x8 + x7[xx])/2)
+        for xx in range(5,20,1):
+            self.x8 = self.x8 + x7[xx]
+        self.x8 = self.x8/(20-5)
         self.x5 = self.x5[1:] + [self.x8]
 
-        x3 = sorted(self.user[POINTS-30:])
-        self.x4 = x3[25]#int((x3[3] + x3[4] + x3[5] + x3[6])/4)
+        x3 = sorted(self.user[POINTS-25:])
+        self.x4 = x3[20]#int((x3[3] + x3[4] + x3[5] + x3[6])/4)
         self.mean = self.mean[1:] + [self.x4]
         # else:
         # self.x5 = self.x5[1:] + [self.x8]
@@ -101,8 +107,8 @@ class PlotFigure(wx.Frame):
 
         # update the plot
         self.l_user.set_ydata(self.user)
-        self.l_native.set_ydata(signal.medfilt(self.mean, 15))
-        self.l_junzhi.set_ydata(signal.medfilt(self.x5,15))
+        self.l_native.set_ydata(signal.medfilt(self.mean, 11))
+        self.l_junzhi.set_ydata(signal.medfilt(self.x5,11))
 
 
         # just draw the "animated" objects
